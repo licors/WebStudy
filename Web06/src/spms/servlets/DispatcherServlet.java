@@ -39,18 +39,18 @@ public class DispatcherServlet extends HttpServlet {
 				}
 			}
 			else if("/member/update.do".equals(servletPath)) {
-				pageControllerPath = "/member/update.do";
+				pageControllerPath = "/member/update";
 				if(request.getParameter("email") != null) {
 					request.setAttribute("member", new Member()
+							.setNo(Integer.parseInt(request.getParameter("no")))
 							.setEmail(request.getParameter("email"))
-							.setPassword(request.getParameter("password"))
 							.setName(request.getParameter("name"))
 							);	
 				}
 				
 			}
 			else if("/member/delete.do".equals(servletPath)) {
-				pageControllerPath = "/member/delete.do";
+				pageControllerPath = "/member/delete";
 			}
 			else if("/auth/login.do".equals(servletPath)) {
 				pageControllerPath = "/auth/login";
@@ -74,7 +74,7 @@ public class DispatcherServlet extends HttpServlet {
 		} catch(Exception e) {
 			e.printStackTrace();
 			request.setAttribute("error", e);
-			RequestDispatcher rd = request.getRequestDispatcher("/Error.do");
+			RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
 			rd.forward(request, response);
 		}
 	}

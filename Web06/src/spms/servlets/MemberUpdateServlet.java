@@ -30,15 +30,10 @@ public class MemberUpdateServlet extends HttpServlet {
 
       request.setAttribute("member", member);
 
-      RequestDispatcher rd = request.getRequestDispatcher(
-          "/member/MemberUpdateForm.jsp");
-      rd.forward(request, response);
+      request.setAttribute("viewUrl", "/member/MemberUpdateForm.jsp");
 
     } catch (Exception e) {
       e.printStackTrace();
-      request.setAttribute("error", e);
-      RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
-      rd.forward(request, response);
     }
   }
 
@@ -49,19 +44,13 @@ public class MemberUpdateServlet extends HttpServlet {
     try {
       ServletContext sc = this.getServletContext();
       MemberDao memberDao = (MemberDao) sc.getAttribute("memberDao");  
-      
-      memberDao.update(new Member()
-      .setNo(Integer.parseInt(request.getParameter("no")))
-      .setName(request.getParameter("name"))
-      .setEmail(request.getParameter("email")));
+      Member member = (Member) request.getAttribute("member");
+      memberDao.update(member);
 
-      response.sendRedirect("list");
+      request.setAttribute("viewUrl", "redirect:list.do");
 
     } catch (Exception e) {
       e.printStackTrace();
-      request.setAttribute("error", e);
-      RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
-      rd.forward(request, response);
     }
   }
 }
