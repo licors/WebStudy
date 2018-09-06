@@ -9,13 +9,11 @@ public class MemberAddController implements Controller {
 
 	@Override
 	public String execute(Map<String, Object> model) throws Exception {
-		if(model.get("member") == null) {
+		if (model.get("member") == null) {
 			return "/member/MemberForm.jsp";
-		}
-		else {
+		} else {
 			MemberDao memberDao = (MemberDao) model.get("memberDao");
-			memberDao.insert(
-					(Member) model.get("member"));
+			memberDao.insert((Member) model.get("member"));
 			return "redirect:list.do";
 		}
 	}
