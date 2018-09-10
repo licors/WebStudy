@@ -12,13 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import smps.controls.Controller;
-import smps.controls.LoginController;
-import smps.controls.LogoutController;
-import smps.controls.MemberAddController;
-import smps.controls.MemberDeleteController;
-import smps.controls.MemberListController;
-import smps.controls.MemberUpdateController;
-import spms.dao.MemberDao;
 import spms.vo.Member;
 
 @WebServlet("*.do")
@@ -37,26 +30,18 @@ public class DispatcherServlet extends HttpServlet {
 			throws ServletException, IOException {
 		response.setContentType("text/html; charset=UTF-8");
 		String servletPath = request.getServletPath();
-		MemberDao memberDao;
 		try {
 			ServletContext sc = this.getServletContext();
 			HashMap<String, Object> model = new HashMap<>();
-			memberDao = (MemberDao) sc.getAttribute("memberDao");
 			model.put("session", request.getSession());
-			Controller pageController = null;
+			Controller pageController = (Controller) sc.getAttribute(servletPath);
 
-			if ("/member/list.do".equals(servletPath)) {
-				pageController = new MemberListController().setMemberDao(memberDao);
-			} else if ("/member/add.do".equals(servletPath)) {
-				pageController = new MemberAddController().setMemberDao(memberDao);
-
+			if ("/member/add.do".equals(servletPath)) {
 				if (request.getParameter("email") != null) {
 					model.put("member", new Member().setEmail(request.getParameter("email"))
 							.setPassword(request.getParameter("password")).setName(request.getParameter("name")));
 				}
 			} else if ("/member/update.do".equals(servletPath)) {
-				pageController = new MemberUpdateController().setMemberDao(memberDao);
-
 				if (request.getParameter("email") != null) {
 					model.put("member", new Member().setNo(Integer.parseInt(request.getParameter("no")))
 							.setEmail(request.getParameter("email")).setName(request.getParameter("name")));
@@ -64,18 +49,12 @@ public class DispatcherServlet extends HttpServlet {
 					model.put("no", Integer.parseInt(request.getParameter("no")));
 				}
 			} else if ("/member/delete.do".equals(servletPath)) {
-				pageController = new MemberDeleteController().setMemberDao(memberDao);
 				model.put("no", Integer.parseInt(request.getParameter("no")));
 			} else if ("/auth/login.do".equals(servletPath)) {
-				pageController = new LoginController().setMemberDao(memberDao);;
-
 				if (request.getParameter("email") != null) {
 					model.put("loginInfo", new Member().setEmail(request.getParameter("email"))
 							.setPassword(request.getParameter("password")));
 				}
-			} else if ("/auth/logout.do".equals(servletPath)) {
-				pageController = new LogoutController();
-
 			}
 
 			String viewUrl = pageController.execute(model);
