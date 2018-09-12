@@ -4,22 +4,25 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import smps.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
-public class LoginController implements Controller {
+public class LoginController implements Controller, DataBinding {
 	MemberDao memberDao;
 
 	public LoginController setMemberDao(MemberDao memberDao) {
 		this.memberDao = memberDao;
 		return this;
 	}
+
 	@Override
 	public String execute(Map<String, Object> model) throws Exception {
-		if (model.get("loginInfo") == null) {
+		Member loginInfo = (Member) model.get("loginInfo");
+		if (loginInfo.getEmail() == null) {
 			return "/auth/LogInForm.jsp";
 		} else {
-			Member loginInfo = (Member) model.get("loginInfo");
+			loginInfo = (Member) model.get("loginInfo");
 			Member member = memberDao.exist(loginInfo.getEmail(), loginInfo.getPassword());
 			if (member != null) {
 				HttpSession session = (HttpSession) model.get("session");
@@ -31,5 +34,9 @@ public class LoginController implements Controller {
 		}
 	}
 
+	@Override
+	public Object[] getDataBinders() {
+		return new Object[] { "loginInfo", spms.vo.Member.class };
+	}
 
 }

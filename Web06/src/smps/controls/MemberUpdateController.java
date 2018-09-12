@@ -2,10 +2,12 @@ package smps.controls;
 
 import java.util.Map;
 
+import smps.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
-public class MemberUpdateController implements Controller {
+public class 
+MemberUpdateController implements Controller, DataBinding {
 	MemberDao memberDao;
 	
 	public MemberUpdateController setMemberDao(MemberDao memberDao) {
@@ -15,13 +17,22 @@ public class MemberUpdateController implements Controller {
 	
 	@Override
 	public String execute(Map<String, Object> model) throws Exception {
-		if (model.get("member") == null) {
-			Member member = memberDao.selectOne((int) model.get("no"));
+		Member member = (Member) model.get("member");
+		if (member.getEmail()==null) {
+			member = memberDao.selectOne((int) model.get("no"));
 			model.put("member", member);
 			return "/member/MemberUpdateForm.jsp";
 		} else {
 			memberDao.update((Member) model.get("member"));
 			return "redirect:list.do";
 		}
+	}
+
+	@Override
+	public Object[] getDataBinders() {
+		return new Object[] {
+				"no", Integer.class,
+				"member", spms.vo.Member.class
+		};
 	}
 }
