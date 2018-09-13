@@ -1,4 +1,4 @@
-package smps.controls;
+package spms.controls;
 
 import java.util.Map;
 

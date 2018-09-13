@@ -1,10 +1,10 @@
-package smps.controls;
+package spms.controls;
 
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
-import smps.bind.DataBinding;
+import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 

@@ -1,8 +1,8 @@
-package smps.controls;
+package spms.controls;
 
 import java.util.Map;
 
-import smps.bind.DataBinding;
+import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 
 public class MemberDeleteController implements Controller, DataBinding {

@@ -1,4 +1,4 @@
-package smps.bind;
+package spms.bind;
 
 public interface DataBinding {
 	Object[] getDataBinders();
