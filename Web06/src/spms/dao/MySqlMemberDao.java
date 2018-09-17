@@ -22,13 +22,13 @@ public class MySqlMemberDao implements MemberDao{
   }
 
   public List<Member> selectList() throws Exception {
-    Connection connection = null;
+    Connection con = null;
     Statement stmt = null;
     ResultSet rs = null;
     
     try {
-      connection = ds.getConnection();
-      stmt = connection.createStatement();
+      con = ds.getConnection();
+      stmt = con.createStatement();
       rs = stmt.executeQuery(
           "SELECT MNO,MNAME,EMAIL,CRE_DATE" + 
               " FROM MEMBERS" +
@@ -52,17 +52,17 @@ public class MySqlMemberDao implements MemberDao{
     } finally {
       try {if (rs != null) rs.close();} catch(Exception e) {}
       try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (connection != null) connection.close();} catch(Exception e) {}
+      try {if (con != null) con.close();} catch(Exception e) {}
     }
   }
 
   public int insert(Member member) throws Exception  {
-    Connection connection = null;
+    Connection con = null;
     PreparedStatement stmt = null;
 
     try {
-      connection = ds.getConnection();
-      stmt = connection.prepareStatement(
+      con = ds.getConnection();
+      stmt = con.prepareStatement(
           "INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
               + " VALUES (?,?,?,NOW(),NOW())");
       stmt.setString(1, member.getEmail());
@@ -75,17 +75,17 @@ public class MySqlMemberDao implements MemberDao{
 
     } finally {
       try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (connection != null) connection.close();} catch(Exception e) {}
+      try {if (con != null) con.close();} catch(Exception e) {}
     }
   }
 
   public int delete(int no) throws Exception {  
-    Connection connection = null;
+    Connection con = null;
     Statement stmt = null;
 
     try {
-      connection = ds.getConnection();
-      stmt = connection.createStatement();
+      con = ds.getConnection();
+      stmt = con.createStatement();
       return stmt.executeUpdate(
           "DELETE FROM MEMBERS WHERE MNO=" + no);
 
@@ -94,17 +94,17 @@ public class MySqlMemberDao implements MemberDao{
 
     } finally {
       try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (connection != null) connection.close();} catch(Exception e) {}
+      try {if (con != null) con.close();} catch(Exception e) {}
     }
   }
 
   public Member selectOne(int no) throws Exception { 
-    Connection connection = null;
+    Connection con = null;
     Statement stmt = null;
     ResultSet rs = null;
     try {
-      connection = ds.getConnection();
-      stmt = connection.createStatement();
+      con = ds.getConnection();
+      stmt = con.createStatement();
       rs = stmt.executeQuery(
           "SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 
               " WHERE MNO=" + no);    
@@ -124,16 +124,16 @@ public class MySqlMemberDao implements MemberDao{
     } finally {
       try {if (rs != null) rs.close();} catch(Exception e) {}
       try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (connection != null) connection.close();} catch(Exception e) {}
+      try {if (con != null) con.close();} catch(Exception e) {}
     }
   }
 
   public int update(Member member) throws Exception { 
-    Connection connection = null;
+    Connection con = null;
     PreparedStatement stmt = null;
     try {
-      connection = ds.getConnection();
-      stmt = connection.prepareStatement(
+      con = ds.getConnection();
+      stmt = con.prepareStatement(
           "UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
               + " WHERE MNO=?");
       stmt.setString(1, member.getEmail());
@@ -146,18 +146,18 @@ public class MySqlMemberDao implements MemberDao{
 
     } finally {
       try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (connection != null) connection.close();} catch(Exception e) {}
+      try {if (con != null) con.close();} catch(Exception e) {}
     }
   }
   
   public Member exist(String email, String password) throws Exception {
-    Connection connection = null;
+    Connection con = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
     try {
-      connection = ds.getConnection();
-      stmt = connection.prepareStatement(
+      con = ds.getConnection();
+      stmt = con.prepareStatement(
           "SELECT MNAME,EMAIL FROM MEMBERS"
               + " WHERE EMAIL=? AND PWD=?");
       stmt.setString(1, email);
@@ -176,7 +176,7 @@ public class MySqlMemberDao implements MemberDao{
     } finally {
       try {if (rs != null) rs.close();} catch (Exception e) {}
       try {if (stmt != null) stmt.close();} catch (Exception e) {}
-      try {if (connection != null) connection.close();} catch(Exception e) {}
+      try {if (con != null) con.close();} catch(Exception e) {}
     }
   }
 
