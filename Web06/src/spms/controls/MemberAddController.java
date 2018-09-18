@@ -21,7 +21,7 @@ public class MemberAddController implements Controller, DataBinding {
 		if (member.getEmail() == null) {
 			return "/member/MemberForm.jsp";
 		} else {
-			memberDao.insert((Member) model.get("member"));
+			memberDao.insert(member);
 			return "redirect:list.do";
 		}
 	}
