@@ -2,10 +2,12 @@ package spms.controls;
 
 import java.util.Map;
 
+import spms.annotation.Component;
 import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
 
+@Component("/member/add.do")
 public class MemberAddController implements Controller, DataBinding {
 	MemberDao memberDao;
 	
@@ -19,7 +21,7 @@ public class MemberAddController implements Controller, DataBinding {
 		if (member.getEmail() == null) {
 			return "/member/MemberForm.jsp";
 		} else {
-			memberDao.insert((Member) model.get("member"));
+			memberDao.insert(member);
 			return "redirect:list.do";
 		}
 	}

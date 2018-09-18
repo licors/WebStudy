@@ -4,28 +4,27 @@ import java.util.Map;
 
 import spms.annotation.Component;
 import spms.bind.DataBinding;
-import spms.dao.MemberDao;
+import spms.dao.ProjectDao;
 
-@Component("/member/delete.do")
-public class MemberDeleteController implements Controller, DataBinding {
-	MemberDao memberDao;
+@Component("/project/delete.do")
+public class ProjectDeleteController implements Controller, DataBinding {
+	ProjectDao projectDao;
 	
-	public MemberDeleteController setMemberDao(MemberDao memberDao) {
-		this.memberDao = memberDao;
-		return this;
+	public void setProjectDao(ProjectDao projectDao) {
+		this.projectDao = projectDao;
 	}
+	
 	@Override
 	public String execute(Map<String, Object> model) throws Exception {
-		memberDao.delete((int) model.get("no"));
+		projectDao.delete((int) model.get("no"));
 		return "redirect:list.do";
 	}
+
 	@Override
 	public Object[] getDataBinders() {
 		return new Object[] {
 				"no", Integer.class
 		};
 	}
-
-
 
 }

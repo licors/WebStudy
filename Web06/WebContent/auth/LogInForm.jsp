@@ -15,6 +15,7 @@
 이메일: <input type="text" name="email"><br>
 암호: <input type="password" name="password"><br>
 <input type="submit" value="로그인">
+<input type="button" value="취소" onclick="location.href='<%=request.getContextPath()%>/project/list.do'">
 </form>
 </body>
 </html>
