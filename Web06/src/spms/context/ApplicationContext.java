@@ -19,30 +19,28 @@ public class ApplicationContext {
 		return objTable.get(key);
 	}
 	
-	public ApplicationContext(String propertiesPath) throws Exception {
-		Properties props = new Properties();
-		props.load(new FileReader(propertiesPath));
-		prepareObjects(props);
-		prepareAnnotationObjects();
-		injectDependancy();
+	public void addBean(String name, Object obj) {
+		objTable.put(name, obj);
 	}
 
 	/*
 	 * Reflections 라이브러리 사용
 	 * https://code.google.com/archive/p/reflections/downloads 
 	 */
-	private void prepareAnnotationObjects() throws Exception {
-		Reflections reflector = new Reflections("");  //원하는 클래스 검색 범위 설정할 수 있다.
+	public void prepareObjectsByAnnotation(String basePackage) throws Exception {
+		Reflections reflector = new Reflections(basePackage);  //basePackage 검색 범위 설정
 		Set<Class<?>> list = reflector.getTypesAnnotatedWith(Component.class);
 		String key = null;
-		
 		for(Class<?> clazz : list) {
 			key = clazz.getAnnotation(Component.class).value();
 			objTable.put(key, clazz.newInstance());
 		}
 	}
 
-	private void prepareObjects(Properties props) throws Exception {
+	public void prepareObjectByProperties(String propertiesPath) throws Exception {
+		Properties props = new Properties();
+		props.load(new FileReader(propertiesPath));
+		
 		Context ctx = new InitialContext();
 		String key = null;
 		String value = null;
@@ -61,7 +59,7 @@ public class ApplicationContext {
 	/*
 	 * 의존 객체 할당
 	 */
-	private void injectDependancy() throws Exception {
+	public void injectDependancy() throws Exception {
 		for(String key:objTable.keySet()) {
 			if(!key.startsWith("jndi.")) {
 				callSetter(objTable.get(key));
