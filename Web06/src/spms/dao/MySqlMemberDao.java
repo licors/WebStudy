@@ -1,183 +1,106 @@
 package spms.dao;
 
-// DataSource 활용 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
-import javax.sql.DataSource;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 
 import spms.annotation.Component;
 import spms.vo.Member;
+import spms.vo.Project;
 
-@Component("memberDao")
+@Component("memberDao") 
 public class MySqlMemberDao implements MemberDao{
-  DataSource ds;
+	SqlSessionFactory sqlSessionFactory;
+	
+	public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
+		this.sqlSessionFactory = sqlSessionFactory;
+	}
+	
+	public List<Member> selectList(HashMap<String, Object> paramMap) throws Exception {
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		
+		try {
+			return sqlSession.selectList("spms.dao.MemberDao.selectList", paramMap);
+		} finally {
+			sqlSession.close();
+		}
+	}
 
-  public void setDataSource(DataSource ds) {
-    this.ds = ds;
-  }
+	public int insert(Member member) throws Exception {
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		
+		try {
+			int count = sqlSession.insert("spms.dao.MemberDao.insert",member);
+			sqlSession.commit();
+			return count;
+		} finally {
+			sqlSession.close();
+		}
+	}
 
-  public List<Member> selectList() throws Exception {
-    Connection con = null;
-    Statement stmt = null;
-    ResultSet rs = null;
-    
-    try {
-      con = ds.getConnection();
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(
-          "SELECT MNO,MNAME,EMAIL,CRE_DATE" + 
-              " FROM MEMBERS" +
-          " ORDER BY MNO ASC");
+	public Member selectOne(int no) throws Exception {
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		try {
+			return sqlSession.selectOne("spms.dao.MemberDao.selectOne",no);
+		} finally {
+			sqlSession.close();
+		}
+	}
 
-      ArrayList<Member> members = new ArrayList<Member>();
+	@Override
+	public int delete(int no) throws Exception {
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		try {
+			int count = sqlSession.delete("spms.dao.MemberDao.delete", no);
+			sqlSession.commit();
+			return count;
+		} finally {
+			sqlSession.close();
+		}
+	}
 
-      while(rs.next()) {
-        members.add(new Member()
-        .setNo(rs.getInt("MNO"))
-        .setName(rs.getString("MNAME"))
-        .setEmail(rs.getString("EMAIL"))
-        .setCreatedDate(rs.getDate("CRE_DATE"))	);
-      }
+	@Override
+	public int update(Member member) throws Exception {
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		try {
+			Member original = sqlSession.selectOne("spms.dao.MemberDao.selectOne", member.getNo());
+			
+			Hashtable<String, Object> paramMap = new Hashtable<>();
+			
+			if(!member.getEmail().equals(original.getEmail())) {
+				paramMap.put("email", member.getEmail());
+			}
+			if(!member.getName().equals(original.getName())) {
+				paramMap.put("name", member.getName());
+			}
+			if(paramMap.size() > 0) {
+				paramMap.put("no", member.getNo());
+			}
+			
+			int count = sqlSession.update("spms.dao.MemberDao.update", paramMap);
+			sqlSession.commit();
+			return count;
+		} finally {
+			sqlSession.close();
+		}
+	}
 
-      return members;
-
-    } catch (Exception e) {
-      throw e;
-
-    } finally {
-      try {if (rs != null) rs.close();} catch(Exception e) {}
-      try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (con != null) con.close();} catch(Exception e) {}
-    }
-  }
-
-  public int insert(Member member) throws Exception  {
-    Connection con = null;
-    PreparedStatement stmt = null;
-
-    try {
-      con = ds.getConnection();
-      stmt = con.prepareStatement(
-          "INSERT INTO MEMBERS(EMAIL,PWD,MNAME,CRE_DATE,MOD_DATE)"
-              + " VALUES (?,?,?,NOW(),NOW())");
-      stmt.setString(1, member.getEmail());
-      stmt.setString(2, member.getPassword());
-      stmt.setString(3, member.getName());
-      return stmt.executeUpdate();
-
-    } catch (Exception e) {
-      throw e;
-
-    } finally {
-      try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (con != null) con.close();} catch(Exception e) {}
-    }
-  }
-
-  public int delete(int no) throws Exception {  
-    Connection con = null;
-    Statement stmt = null;
-
-    try {
-      con = ds.getConnection();
-      stmt = con.createStatement();
-      return stmt.executeUpdate(
-          "DELETE FROM MEMBERS WHERE MNO=" + no);
-
-    } catch (Exception e) {
-      throw e;
-
-    } finally {
-      try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (con != null) con.close();} catch(Exception e) {}
-    }
-  }
-
-  public Member selectOne(int no) throws Exception { 
-    Connection con = null;
-    Statement stmt = null;
-    ResultSet rs = null;
-    try {
-      con = ds.getConnection();
-      stmt = con.createStatement();
-      rs = stmt.executeQuery(
-          "SELECT MNO,EMAIL,MNAME,CRE_DATE FROM MEMBERS" + 
-              " WHERE MNO=" + no);    
-      if (rs.next()) {
-        return new Member()
-        .setNo(rs.getInt("MNO"))
-        .setEmail(rs.getString("EMAIL"))
-        .setName(rs.getString("MNAME"))
-        .setCreatedDate(rs.getDate("CRE_DATE"));
-
-      } else {
-        throw new Exception("해당 번호의 회원을 찾을 수 없습니다.");
-      }
-
-    } catch (Exception e) {
-      throw e;
-    } finally {
-      try {if (rs != null) rs.close();} catch(Exception e) {}
-      try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (con != null) con.close();} catch(Exception e) {}
-    }
-  }
-
-  public int update(Member member) throws Exception { 
-    Connection con = null;
-    PreparedStatement stmt = null;
-    try {
-      con = ds.getConnection();
-      stmt = con.prepareStatement(
-          "UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
-              + " WHERE MNO=?");
-      stmt.setString(1, member.getEmail());
-      stmt.setString(2, member.getName());
-      stmt.setInt(3, member.getNo());
-      return stmt.executeUpdate();
-
-    } catch (Exception e) {
-      throw e;
-
-    } finally {
-      try {if (stmt != null) stmt.close();} catch(Exception e) {}
-      try {if (con != null) con.close();} catch(Exception e) {}
-    }
-  }
-  
-  public Member exist(String email, String password) throws Exception {
-    Connection con = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      con = ds.getConnection();
-      stmt = con.prepareStatement(
-          "SELECT MNAME,EMAIL FROM MEMBERS"
-              + " WHERE EMAIL=? AND PWD=?");
-      stmt.setString(1, email);
-      stmt.setString(2, password);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        return new Member()
-          .setName(rs.getString("MNAME"))
-          .setEmail(rs.getString("EMAIL"));
-      } else {
-        return null;
-      }
-    } catch (Exception e) {
-      throw e;
-
-    } finally {
-      try {if (rs != null) rs.close();} catch (Exception e) {}
-      try {if (stmt != null) stmt.close();} catch (Exception e) {}
-      try {if (con != null) con.close();} catch(Exception e) {}
-    }
-  }
+	@Override
+	public Member exist(String email, String password) throws Exception {
+		HashMap<String, Object> paramMap = new HashMap<>();
+		paramMap.put("email", email);
+		paramMap.put("password", password);
+		
+		SqlSession sqlSession = sqlSessionFactory.openSession();
+		try {
+			return sqlSession.selectOne("spms.dao.MemberDao.exist", paramMap);
+		} finally {
+			sqlSession.close();
+		}
+	}
+ 
 
 }
