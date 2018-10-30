@@ -2,7 +2,9 @@ package spms.controls;
 
 import java.util.Map;
 
-import spms.annotation.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import spms.bind.DataBinding;
 import spms.dao.MemberDao;
 import spms.vo.Member;
@@ -11,6 +13,7 @@ import spms.vo.Member;
 public class MemberUpdateController implements Controller, DataBinding {
 	MemberDao memberDao;
 	
+	@Autowired
 	public MemberUpdateController setMemberDao(MemberDao memberDao) {
 		this.memberDao = memberDao;
 		return this;
