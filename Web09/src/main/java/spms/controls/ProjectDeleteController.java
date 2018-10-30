@@ -2,7 +2,9 @@ package spms.controls;
 
 import java.util.Map;
 
-import spms.annotation.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import spms.bind.DataBinding;
 import spms.dao.ProjectDao;
 
@@ -10,6 +12,7 @@ import spms.dao.ProjectDao;
 public class ProjectDeleteController implements Controller, DataBinding {
 	ProjectDao projectDao;
 	
+	@Autowired
 	public void setProjectDao(ProjectDao projectDao) {
 		this.projectDao = projectDao;
 	}

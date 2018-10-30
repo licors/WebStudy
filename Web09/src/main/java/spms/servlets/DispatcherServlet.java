@@ -10,21 +10,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+
 import spms.bind.DataBinding;
 import spms.bind.ServletRequestDataBinder;
-import spms.context.ApplicationContext;
 import spms.controls.Controller;
 import spms.listeners.ContextLoaderListener;
 
 @WebServlet("*.do")
 public class DispatcherServlet extends HttpServlet {
-	/*
-	 * @see
-	 * javax.servlet.http.HttpServlet#service(javax.servlet.http.HttpServletRequest,
-	 * javax.servlet.http.HttpServletResponse) 호출순서 : servlet 인터페이스에 선언된 service()
-	 * 호출 -> HttpServlet 클래스에 추가된 아래 service() 호풀 service 오버라이딩 한 이유 : GET, POST 뿐만
-	 * 아니라 다른 요청 방식에도 대응하기 위해서
-	 */
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
